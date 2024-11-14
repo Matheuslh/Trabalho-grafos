@@ -27,7 +27,7 @@ class GraphTheoryApp(ctk.CTk):
         # Exemplo de uso no CTkLabel
         ctk.CTkLabel(self.sidebar_frame, text="GRAPHIN", font=arial_bold_font).pack(pady=35)
 
-        ctk.CTkEntry(self.sidebar_frame, placeholder_text="Insira os vértices... (Ex.: 1 2 3 4 ou 1, 2, 3, 4)", width=300, height=30).pack(pady=20, padx=20)
+        ctk.CTkEntry(self.sidebar_frame, placeholder_text="Insira os vértices... (Ex.: 1 2 3 4 ou 1-(3)-2 2-(4)-3)", width=300, height=30).pack(pady=20, padx=20)
 
         self.algorithm_option = ctk.StringVar(value="Selecione um algoritmo")
         self.algorithm_menu = ctk.CTkOptionMenu(self.sidebar_frame, values=["Dijkstra", "Bellman-Ford", "Kruskal", "Prim", "Busca em Largura", "Busca em Profundidade"],
@@ -59,7 +59,7 @@ class GraphTheoryApp(ctk.CTk):
         # Exemplo de criação de um grafo simples usando networkx
         G = nx.Graph()
         G.add_edges_from([(1, 2), (2, 3), (3, 4), (4, 1)])
-
+        
         # Cria uma figura do matplotlib
         fig = Figure(figsize=(5, 5), dpi=100)
         ax = fig.add_subplot(111)

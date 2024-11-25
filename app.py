@@ -141,35 +141,11 @@ class GraphTheoryApp(ctk.CTk):
             with open(file_path, "r") as file:
                 for line in file:
                     line = line.strip()
-                    edges = line.split()  # Separa as arestas por espaços
-
-                    for edge in edges:
-                        parts = edge.split("-")  # Divide a aresta
-                        if len(parts) == 2:  # Caso sem peso
-                            try:
-                                u = int(parts[0].strip())  # Primeiro vértice
-                                v = int(parts[1].strip())  # Segundo vértice
-                                self.graph.add_edge(u, v)  # Adiciona aresta sem peso
-                                self.log_message(f"Aresta sem peso adicionada entre {u} e {v}")
-                            except ValueError:
-                                messagebox.showerror("Erro", "Formato inválido. Certifique-se de que os vértices são números inteiros.")
-                        elif len(parts) == 3:  # Caso com peso
-                            try:
-                                u = int(parts[0].strip())  # Primeiro vértice
-                                weight_part = parts[1].strip()  # Parte do peso
-                                v = int(parts[2].strip())  # Segundo vértice
-                                
-                                # Verifica se o peso está entre parênteses
-                                if weight_part.startswith("(") and weight_part.endswith(")"):
-                                    weight = int(weight_part[1:-1])  # Extrai o número entre parênteses
-                                    self.graph.add_edge(u, v, weight=weight)  # Adiciona aresta com peso
-                                    self.log_message(f"Aresta com peso {weight} adicionada entre {u} e {v}")
-                                else:
-                                    messagebox.showerror("Erro", "Formato de peso inválido. Use '(peso)'.")
-                            except ValueError:
-                                messagebox.showerror("Erro", "Formato inválido. Certifique-se de que os vértices e peso são números inteiros.")
-                        else:
-                            messagebox.showerror("Erro", "Formato de aresta inválido. Use 'v1-(peso)-v2' ou 'v1-v2'.")
+                    items = line.split(",")  
+                    for item in items:
+                        self.process_vertex_or_edge(item.strip())  # Chama a função de processamento existente
+            self.update_graph_info()  #
+            messagebox.showinfo("Sucesso", "Dados carregados com sucesso do arquivo.")
 
 
     def display_graph(self):

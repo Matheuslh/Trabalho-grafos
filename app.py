@@ -57,21 +57,34 @@ class GraphTheoryApp(ctk.CTk):
         ctk.CTkButton(self.sidebar_frame, text="Limpar", command=self.clear_graph, width=300, fg_color="red", hover_color="darkred").pack(pady=5)
         ctk.CTkButton(self.sidebar_frame, text="Visualizar Grafo", command=self.display_graph, width=300, fg_color="green", hover_color="darkgreen").pack(pady=5)
 
-        # Entrada e botão para verificar vértices adjacentes
-        self.vertex_entry = ctk.CTkEntry(self.sidebar_frame, placeholder_text="Insira o vértice", width=300, height=30)
-        self.vertex_entry.pack(pady=20, padx=20)
-        ctk.CTkButton(self.sidebar_frame, text="Ver Adjacentes", command=self.show_adjacent_vertices, width=300).pack(pady=5)
-
-        # Label para exibir os vértices adjacentes
-        self.adjacency_label = ctk.CTkLabel(self.sidebar_frame, text="Vértices adjacentes: Nenhum", font=("Arial", 12))
-        self.adjacency_label.pack(pady=5)
-
         # Widgets do frame principal (canvas para desenhar o grafo)
         self.canvas_frame = ctk.CTkFrame(self.main_frame)
-        self.canvas_frame.pack(fill=tk.BOTH, expand=True)
+        self.canvas_frame.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
+
         self.canvas = tk.Canvas(self.canvas_frame, bg="white", highlightthickness=1, highlightbackground="gray")
         self.canvas.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
+        # Novo frame para funcionalidades adicionais no lado direito
+        self.right_frame = ctk.CTkFrame(self.main_frame, width=200)
+        self.right_frame.pack(side=tk.RIGHT, fill=tk.Y)
+        
+        # Widgets da barra lateral
+        arial_bold_font = ("Arial", 35, "bold")
+        ctk.CTkLabel(self.right_frame, text="FUNÇÕES", font=arial_bold_font).pack(pady=35)
+
+        # Funcionalidades adicionais no right_frame
+        ctk.CTkButton(self.right_frame, text="Verificar Euleriano", command=self.check_eulerian, width=300).pack(pady=5)
+
+        # Entrada e botão para verificar vértices adjacentes
+        self.vertex_entry = ctk.CTkEntry(self.right_frame, placeholder_text="Insira o vértice", width=300, height=30)
+        self.vertex_entry.pack(pady=20, padx=20)
+        ctk.CTkButton(self.right_frame, text="Ver Adjacentes", command=self.show_adjacent_vertices, width=300).pack(pady=5)
+        
+        # Label para exibir os vértices adjacentes
+        self.adjacency_label = ctk.CTkLabel(self.right_frame, text="", font=("Arial", 14))
+        self.adjacency_label.pack(pady=5)
+
+        
     def log_message(self, message):
         print(message)  # Por enquanto, apenas imprime no console
 
@@ -211,6 +224,22 @@ class GraphTheoryApp(ctk.CTk):
                 messagebox.showerror("Erro", "O vértice inserido não existe no grafo.")
         else:
             messagebox.showerror("Erro", "Insira um vértice válido.")
+            
+    def check_eulerian(self):
+        if self.graph.number_of_nodes() == 0:
+            messagebox.showerror("Erro", "O grafo está vazio. Adicione vértices ou arestas antes de verificar se é Euleriano.")
+            return
+        if self.directed:
+            if nx.is_strongly_connected(self.graph) and all(self.graph.in_degree(n) == self.graph.out_degree(n) for n in self.graph.nodes):
+                messagebox.showinfo("Grafo Euleriano", "O grafo é um Circuito Euleriano (Direcionado).")
+            else:
+                messagebox.showinfo("Grafo Não Euleriano", "O grafo não é um Circuito Euleriano.")
+        else:
+            if nx.is_connected(self.graph) and all(deg % 2 == 0 for _, deg in self.graph.degree()):
+                messagebox.showinfo("Grafo Euleriano", "O grafo é Euleriano.")
+            else:
+                messagebox.showinfo("Grafo Não Euleriano", "O grafo não é Euleriano.")
+
 
 
 if __name__ == "__main__":

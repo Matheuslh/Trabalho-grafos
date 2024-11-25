@@ -1,4 +1,4 @@
-# GraphIn - Sistema de Visualização e Manipulação de Grafos
+# GRAPHIN - Sistema de Visualização e Manipulação de Grafos
 
 Projeto feito para disciplina de Teoria dos Grafos, cadeira ministrada <br/>
 pelo professor Breno Alencar na C.E.S.A.R. School

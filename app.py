@@ -130,8 +130,37 @@ class GraphTheoryApp(ctk.CTk):
         if file_path:
             with open(file_path, "r") as file:
                 for line in file:
-                    self.input_entry.insert(0, line.strip())
-                    self.add_vertex_or_edge()
+                    line = line.strip()
+                    edges = line.split()  # Separa as arestas por espaços
+
+                    for edge in edges:
+                        parts = edge.split("-")  # Divide a aresta
+                        if len(parts) == 2:  # Caso sem peso
+                            try:
+                                u = int(parts[0].strip())  # Primeiro vértice
+                                v = int(parts[1].strip())  # Segundo vértice
+                                self.graph.add_edge(u, v)  # Adiciona aresta sem peso
+                                self.log_message(f"Aresta sem peso adicionada entre {u} e {v}")
+                            except ValueError:
+                                messagebox.showerror("Erro", "Formato inválido. Certifique-se de que os vértices são números inteiros.")
+                        elif len(parts) == 3:  # Caso com peso
+                            try:
+                                u = int(parts[0].strip())  # Primeiro vértice
+                                weight_part = parts[1].strip()  # Parte do peso
+                                v = int(parts[2].strip())  # Segundo vértice
+                                
+                                # Verifica se o peso está entre parênteses
+                                if weight_part.startswith("(") and weight_part.endswith(")"):
+                                    weight = int(weight_part[1:-1])  # Extrai o número entre parênteses
+                                    self.graph.add_edge(u, v, weight=weight)  # Adiciona aresta com peso
+                                    self.log_message(f"Aresta com peso {weight} adicionada entre {u} e {v}")
+                                else:
+                                    messagebox.showerror("Erro", "Formato de peso inválido. Use '(peso)'.")
+                            except ValueError:
+                                messagebox.showerror("Erro", "Formato inválido. Certifique-se de que os vértices e peso são números inteiros.")
+                        else:
+                            messagebox.showerror("Erro", "Formato de aresta inválido. Use 'v1-(peso)-v2' ou 'v1-v2'.")
+
 
     def display_graph(self):
         if self.graph.number_of_nodes() == 0:
@@ -150,9 +179,15 @@ class GraphTheoryApp(ctk.CTk):
         pos = nx.spring_layout(self.graph)
         nx.draw(self.graph, pos, with_labels=True, node_size=2000, node_color='skyblue', font_size=10, ax=ax)
 
+        # Exibe os pesos das arestas, se houver
+        edge_labels = nx.get_edge_attributes(self.graph, 'weight')
+        if edge_labels:  # Se houver pesos
+            nx.draw_networkx_edge_labels(self.graph, pos, edge_labels=edge_labels, ax=ax)
+
         canvas = FigureCanvasTkAgg(fig, master=self.canvas)
         canvas.draw()
         canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+
 
     def update_graph_info(self):
         self.order_label.configure(text=f"Ordem: {self.graph.number_of_nodes()}")

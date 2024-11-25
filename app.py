@@ -85,9 +85,9 @@ class GraphTheoryApp(ctk.CTk):
             self.toggle_button.configure(text="Tornar Grafo Não Direcionado" if self.directed else "Tornar Grafo Direcionado")
             self.graph_type_label.configure(text=f"Tipo de Grafo: {'Direcionado' if self.directed else 'Não Direcionado'}")
             messagebox.showinfo("Configuração Alterada", f"Grafo {'Direcionado' if self.directed else 'Não Direcionado'}")
+    
 
-    def add_vertex_or_edge(self):
-        data = self.input_entry.get().strip()
+    def process_vertex_or_edge(self, data):
         if "-" in data:  # Verifica se é uma aresta
             parts = data.split("-")
             if len(parts) == 2:  # Aresta sem peso (v1-v2)
@@ -122,6 +122,16 @@ class GraphTheoryApp(ctk.CTk):
                 self.log_message(f"Vértice adicionado: {vertex}")
             except ValueError:
                 messagebox.showerror("Erro", "Vértice inválido. Insira um número inteiro.")
+
+    def add_vertex_or_edge(self):
+        data = self.input_entry.get().strip()
+        if "," in data:
+            datas = data.split(",")
+            for i in range (len(datas)): 
+                datas[i] = datas[i].strip()
+                self.process_vertex_or_edge(datas[i])
+        else:
+            self.process_vertex_or_edge(data)
         self.input_entry.delete(0, tk.END)
         self.update_graph_info()
 

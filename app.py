@@ -110,7 +110,8 @@ class GraphTheoryApp(ctk.CTk):
         self.check_adjacency = ctk.CTkEntry(self.right_frame, placeholder_text="Insira um par de vértices ex.: 1, 2", width=300, height=30)
         self.check_adjacency.pack(pady=5, padx=20)
 
-        ctk.CTkButton(self.right_frame, text="Checar adjacência", command=self.check_adjacency, width=300).pack(pady=20)
+        # Botão para verificar adjacência
+        ctk.CTkButton(self.right_frame, text="Verificar Adjacência", command=self.check_adjacency_function, width=300).pack(pady=5)
         
     def log_message(self, message):
         print(message)  # Por enquanto, apenas imprime no console
@@ -283,6 +284,29 @@ class GraphTheoryApp(ctk.CTk):
         except nx.NetworkXNoPath:
             messagebox.showerror("Erro", "Não há caminho entre os vértices fornecidos.")
 
+    def check_adjacency_function(self):
+        input_text = self.check_adjacency.get().strip()
+        
+        if not input_text:
+            return messagebox.showwarning("Entrada inválida", "Por favor, insira um par de vértices.")
+        
+        try:
+            v1, v2 = input_text.split(',')
+            v1, v2 = v1.strip(), v2.strip()
+            
+            if v1 not in self.graph.nodes or v2 not in self.graph.nodes:
+                messagebox.showwarning("Vértices inválidos", f"Um ou ambos os vértices {v1} e {v2} não estão no grafo.")
+                return
+
+            # Verifica se a aresta entre os vértices existe
+            if self.graph.has_edge(v1, v2):
+                messagebox.showinfo("Adjacência", f"Os vértices {v1} e {v2} são adjacentes.")
+            else:
+                messagebox.showinfo("Adjacência", f"Os vértices {v1} e {v2} NÃO são adjacentes.")
+        except ValueError:
+            messagebox.showwarning("Formato inválido", "Insira os vértices no formato correto: v1, v2.")
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao verificar adjacência: {e}")
 
     def check_vertex_degree(self):
         vertex = self.check_degree.get().strip()

@@ -72,7 +72,9 @@ class GraphTheoryApp(ctk.CTk):
         ctk.CTkLabel(self.right_frame, text="FUNÇÕES", font=arial_bold_font).pack(pady=35)
 
         # Funcionalidades adicionais no right_frame
-        ctk.CTkButton(self.right_frame, text="Verificar Euleriano", command=self.check_eulerian, width=300).pack(pady=5)
+
+        # Label de Checar Adjacentes
+        ctk.CTkLabel(self.right_frame, text="Checar Adjacentes", font=("Arial", 16)).pack(pady=2)
 
         # Entrada e botão para verificar vértices adjacentes
         self.vertex_entry = ctk.CTkEntry(self.right_frame, placeholder_text="Insira o vértice", width=300, height=30)
@@ -112,6 +114,10 @@ class GraphTheoryApp(ctk.CTk):
 
         # Botão para verificar adjacência
         ctk.CTkButton(self.right_frame, text="Verificar Adjacência", command=self.check_adjacency_function, width=300).pack(pady=5)
+        
+        # Botão de checar Euleriano
+        ctk.CTkLabel(self.right_frame, text="Checar se Grafo é Euleriano", font=("Arial", 16)).pack(pady=2)
+        ctk.CTkButton(self.right_frame, text="Verificar Euleriano", command=self.check_eulerian, width=300).pack(pady=5)
         
     def log_message(self, message):
         print(message)  # Por enquanto, apenas imprime no console

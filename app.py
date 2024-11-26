@@ -131,37 +131,32 @@ class GraphTheoryApp(ctk.CTk):
         if "-" in data:  # Verifica se é uma aresta
             parts = data.split("-")
             if len(parts) == 2:  # Aresta sem peso (v1-v2)
-                try:
-                    u = int(parts[0].strip())  # Primeiro vértice
-                    v = int(parts[1].strip())  # Segundo vértice
-                    self.graph.add_edge(u, v)  # Adiciona aresta com peso padrão 1
-                    self.log_message(f"Aresta sem peso adicionada entre {u} e {v}")
-                except ValueError:
-                    messagebox.showerror("Erro", "Formato inválido. Certifique-se de que os vértices são números inteiros.")
+                u = parts[0].strip()  # Primeiro vértice
+                v = parts[1].strip()  # Segundo vértice
+                self.graph.add_edge(u, v)  # Adiciona aresta sem peso
+                self.log_message(f"Aresta sem peso adicionada entre {u} e {v}")
             elif len(parts) == 3:  # Aresta com peso (v1-(peso)-v2)
-                try:
-                    u = int(parts[0].strip())  # Primeiro vértice
-                    weight_part = parts[1].strip()  # Parte do peso
-                    v = int(parts[2].strip())  # Segundo vértice
-                    
-                    # Verifica se o peso está entre parênteses
-                    if weight_part.startswith("(") and weight_part.endswith(")"):
+                u = parts[0].strip()  # Primeiro vértice
+                weight_part = parts[1].strip()  # Parte do peso
+                v = parts[2].strip()  # Segundo vértice
+                
+                # Verifica se o peso está entre parênteses
+                if weight_part.startswith("(") and weight_part.endswith(")"):
+                    try:
                         weight = int(weight_part[1:-1])  # Extrai o número entre parênteses
                         self.graph.add_edge(u, v, weight=weight)  # Adiciona aresta com peso
                         self.log_message(f"Aresta com peso {weight} adicionada entre {u} e {v}")
-                    else:
-                        messagebox.showerror("Erro", "Formato de peso inválido. Use '(peso)'.")
-                except ValueError:
-                    messagebox.showerror("Erro", "Formato inválido. Certifique-se de que os vértices e peso são números inteiros.")
+                    except ValueError:
+                        messagebox.showerror("Erro", "Peso inválido. Certifique-se de que é um número.")
+                else:
+                    messagebox.showerror("Erro", "Formato de peso inválido. Use '(peso)'.")
             else:
                 messagebox.showerror("Erro", "Formato de aresta inválido. Use 'v1-(peso)-v2' ou 'v1-v2'.")
         else:  # Caso contrário, trata como vértice único
-            try:
-                vertex = int(data)
-                self.graph.add_node(vertex)
-                self.log_message(f"Vértice adicionado: {vertex}")
-            except ValueError:
-                messagebox.showerror("Erro", "Vértice inválido. Insira um número inteiro.")
+            vertex = data.strip()
+            self.graph.add_node(vertex)
+            self.log_message(f"Vértice adicionado: {vertex}")
+
 
     def add_vertex_or_edge(self):
         data = self.input_entry.get().strip()
@@ -253,70 +248,44 @@ class GraphTheoryApp(ctk.CTk):
 
     def show_adjacent_vertices(self):
         vertex = self.vertex_entry.get().strip()
-        if vertex.isdigit():
-            vertex = int(vertex)
-            if vertex in self.graph.nodes:
-                # Se o grafo for direcionado, mostra tanto os predecessores (entrada) quanto os sucessores (saída)
-                if self.directed:
-                    # Predecessores (vértices de entrada)
-                    predecessors = list(self.graph.predecessors(vertex))
-                    # Sucessores (vértices de saída)
-                    successors = list(self.graph.successors(vertex))
-                    
-                    self.adjacency_label.configure(
-                        text=f"Vértices de Entrada: {', '.join(map(str, predecessors)) if predecessors else 'Nenhum'}\n"
-                            f"Vértices de Saída: {', '.join(map(str, successors)) if successors else 'Nenhum'}"
-                    )
-                else:
-                    # Para grafos não direcionados, basta pegar os adjacentes
-                    adjacents = list(self.graph.adj[vertex])
-                    self.adjacency_label.configure(
-                        text=f"Vértices adjacentes: {', '.join(map(str, adjacents)) if adjacents else 'Nenhum'}"
-                    )
+        if vertex in self.graph.nodes:
+            if self.directed:
+                predecessors = list(self.graph.predecessors(vertex))
+                successors = list(self.graph.successors(vertex))
+                self.adjacency_label.configure(
+                    text=f"Vértices de Entrada: {', '.join(predecessors) if predecessors else 'Nenhum'}\n"
+                        f"Vértices de Saída: {', '.join(successors) if successors else 'Nenhum'}"
+                )
             else:
-                messagebox.showerror("Erro", "O vértice inserido não existe no grafo.")
+                adjacents = list(self.graph.adj[vertex])
+                self.adjacency_label.configure(
+                    text=f"Vértices adjacentes: {', '.join(adjacents) if adjacents else 'Nenhum'}"
+                )
         else:
-            messagebox.showerror("Erro", "Insira um vértice válido.")
-            
+            messagebox.showerror("Erro", "O vértice inserido não existe no grafo.")
+
     def find_shortest_path(self):
-        # Obtém os valores de entrada dos vértices de origem e destino
         start_vertex = self.start_vertex_entry.get().strip()
         target_vertex = self.end_vertex_entry.get().strip()
-        
-        # Verifica se os valores são números válidos
-        if not start_vertex.isdigit() or not target_vertex.isdigit():
-            messagebox.showerror("Erro", "Por favor, insira vértices válidos (números inteiros).")
-            return
 
-        start_vertex = int(start_vertex)
-        target_vertex = int(target_vertex)
-
-        # Verifica se os vértices existem no grafo
         if start_vertex not in self.graph.nodes or target_vertex not in self.graph.nodes:
             messagebox.showerror("Erro", "Os vértices fornecidos não existem no grafo.")
             return
 
         try:
-            # Usa o algoritmo de Dijkstra para encontrar o menor caminho
             path = nx.shortest_path(self.graph, source=start_vertex, target=target_vertex, weight="weight")
             cost = nx.shortest_path_length(self.graph, source=start_vertex, target=target_vertex, weight="weight")
             
-            # Exibe o custo e o caminho encontrado
             messagebox.showinfo(
                 "Caminho Mais Curto",
-                f"Custo do menor caminho: {cost}\nSequência de vértices: {', '.join(map(str, path))}"
+                f"Custo do menor caminho: {cost}\nSequência de vértices: {', '.join(path)}"
             )
         except nx.NetworkXNoPath:
             messagebox.showerror("Erro", "Não há caminho entre os vértices fornecidos.")
 
+
     def check_vertex_degree(self):
         vertex = self.check_degree.get().strip()
-
-        if not vertex.isdigit():
-            messagebox.showerror("Erro", "Por favor, insira um vértice válido (número inteiro).")
-            return
-
-        vertex = int(vertex)
 
         if vertex not in self.graph.nodes:
             messagebox.showerror("Erro", "O vértice fornecido não existe no grafo.")
@@ -332,6 +301,7 @@ class GraphTheoryApp(ctk.CTk):
         else:
             degree = self.graph.degree(vertex)
             messagebox.showinfo("Grau do Vértice", f"Grau: {degree}")
+
 
     def check_eulerian(self):
         if self.graph.number_of_nodes() == 0:

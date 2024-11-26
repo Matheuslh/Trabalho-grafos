@@ -55,8 +55,7 @@ class GraphTheoryApp(ctk.CTk):
 
         # Botões para funcionalidades principais
         ctk.CTkButton(self.sidebar_frame, text="Limpar", command=self.clear_graph, width=300, fg_color="red", hover_color="darkred").pack(pady=5)
-        ctk.CTkButton(self.sidebar_frame, text="Visualizar Grafo", command=self.display_graph, width=300, fg_color="green", hover_color="darkgreen").pack(pady=5)
-
+    
         # Widgets do frame principal (canvas para desenhar o grafo)
         self.canvas_frame = ctk.CTkFrame(self.main_frame)
         self.canvas_frame.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
@@ -173,6 +172,7 @@ class GraphTheoryApp(ctk.CTk):
                 self.process_vertex_or_edge(datas[i])
         else:
             self.process_vertex_or_edge(data)
+        self.display_graph()
         self.input_entry.delete(0, tk.END)
         self.update_graph_info()
 
@@ -180,6 +180,8 @@ class GraphTheoryApp(ctk.CTk):
     def load_from_file(self):
         file_path = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt"), ("CSV Files", "*.csv")])
         if file_path:
+            if self.graph.number_of_nodes() != 0:
+                self.clear_graph()
             if file_path.endswith(".csv"):
                 with open(file_path, "r") as file:
                     reader = csv.reader(file)
@@ -196,12 +198,12 @@ class GraphTheoryApp(ctk.CTk):
                         items = line.split(",")  
                         for item in items:
                             self.process_vertex_or_edge(item.strip())  # Chama a função de processamento existente
+            self.display_graph()
             self.update_graph_info()
             messagebox.showinfo("Sucesso", "Dados carregados com sucesso do arquivo.")
 
     def display_graph(self):
         if self.graph.number_of_nodes() == 0:
-            messagebox.showerror("Erro", "O grafo está vazio. Adicione vértices ou arestas antes de visualizar.")
             return
 
         # Limpa o canvas removendo o gráfico atual antes de desenhar um novo
@@ -233,7 +235,20 @@ class GraphTheoryApp(ctk.CTk):
     def clear_graph(self):
         self.graph.clear()
         self.update_graph_info()
-        self.canvas.delete("all")
+
+        # Limpa o canvas e desenha uma tela branca
+        for widget in self.canvas.winfo_children():
+            widget.destroy()
+
+        fig = Figure(figsize=(5, 5), dpi=100)
+        ax = fig.add_subplot(111)
+        ax.set_title("Grafo Limpo")
+        ax.axis("off")  # Remove os eixos, deixando o canvas branco
+
+        canvas = FigureCanvasTkAgg(fig, master=self.canvas)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+
         messagebox.showinfo("Grafo Limpo", "O grafo foi limpo com sucesso.")
 
     def show_adjacent_vertices(self):

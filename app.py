@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 from tkinter import filedialog, messagebox
+import csv
 
 ctk.set_appearance_mode("dark")  # Outros modos: "light", "system"
 ctk.set_default_color_theme("dark-blue")  # Outros temas: "green", "dark-blue"
@@ -162,17 +163,29 @@ class GraphTheoryApp(ctk.CTk):
         self.input_entry.delete(0, tk.END)
         self.update_graph_info()
 
+
     def load_from_file(self):
-        file_path = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt")])
+        file_path = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt"), ("CSV Files", "*.csv")])
         if file_path:
-            with open(file_path, "r") as file:
-                for line in file:
-                    line = line.strip()
-                    items = line.split(",")  
-                    for item in items:
-                        self.process_vertex_or_edge(item.strip())  # Chama a função de processamento existente
-            self.update_graph_info()  #
+            if file_path.endswith(".csv"):
+                with open(file_path, "r") as file:
+                    reader = csv.reader(file)
+                    next(reader)  # Ignora a primeira linha (título)
+                    for row in reader:
+                        if len(row) >= 3:  # Verifica se a linha tem pelo menos 3 colunas
+                            # Formato: [coluna 1]-([coluna 3])-[coluna 2]
+                            processed_item = f"{row[0].strip()}-({row[2].strip()})-{row[1].strip()}"
+                            self.process_vertex_or_edge(processed_item)  # Chama a função de processamento existente
+            else:  # Caso seja um arquivo .txt
+                with open(file_path, "r") as file:
+                    for line in file:
+                        line = line.strip()
+                        items = line.split(",")  
+                        for item in items:
+                            self.process_vertex_or_edge(item.strip())  # Chama a função de processamento existente
+            self.update_graph_info()
             messagebox.showinfo("Sucesso", "Dados carregados com sucesso do arquivo.")
+
 
 
     def display_graph(self):

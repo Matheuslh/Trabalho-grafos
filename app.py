@@ -161,6 +161,9 @@ class GraphTheoryApp(ctk.CTk):
 
     def add_vertex_or_edge(self):
         data = self.input_entry.get().strip()
+        if data == "":
+            messagebox.showerror("Erro", "Valor é obrigatório!")
+            return
         if "," in data:
             datas = data.split(",")
             for i in range (len(datas)): 

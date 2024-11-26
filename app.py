@@ -82,7 +82,21 @@ class GraphTheoryApp(ctk.CTk):
         
         # Label para exibir os vértices adjacentes
         self.adjacency_label = ctk.CTkLabel(self.right_frame, text="", font=("Arial", 14))
-        self.adjacency_label.pack(pady=5)
+        self.adjacency_label.pack(pady=3)
+
+        ctk.CTkLabel(self.right_frame, text="Ver menor caminho", font=("Arial", 16)).pack(pady=2)
+
+        # Entrada para o vértice de origem
+        self.start_vertex_entry = ctk.CTkEntry(self.right_frame, placeholder_text="Vértice de origem", width=300, height=30)
+        self.start_vertex_entry.pack(pady=5, padx=20)
+
+        # Entrada para o vértice de destino
+        self.end_vertex_entry = ctk.CTkEntry(self.right_frame, placeholder_text="Vértice de destino", width=300, height=30)
+        self.end_vertex_entry.pack(pady=5, padx=20)
+
+        # Botão para encontrar o caminho mais curto
+        ctk.CTkButton(self.right_frame, text="Caminho Mais Curto", command=self.find_shortest_path, width=300).pack(pady=20)
+
 
         
     def log_message(self, message):
@@ -225,6 +239,37 @@ class GraphTheoryApp(ctk.CTk):
         else:
             messagebox.showerror("Erro", "Insira um vértice válido.")
             
+    def find_shortest_path(self):
+        # Obtém os valores de entrada dos vértices de origem e destino
+        start_vertex = self.start_vertex_entry.get().strip()
+        target_vertex = self.end_vertex_entry.get().strip()
+        
+        # Verifica se os valores são números válidos
+        if not start_vertex.isdigit() or not target_vertex.isdigit():
+            messagebox.showerror("Erro", "Por favor, insira vértices válidos (números inteiros).")
+            return
+
+        start_vertex = int(start_vertex)
+        target_vertex = int(target_vertex)
+
+        # Verifica se os vértices existem no grafo
+        if start_vertex not in self.graph.nodes or target_vertex not in self.graph.nodes:
+            messagebox.showerror("Erro", "Os vértices fornecidos não existem no grafo.")
+            return
+
+        try:
+            # Usa o algoritmo de Dijkstra para encontrar o menor caminho
+            path = nx.shortest_path(self.graph, source=start_vertex, target=target_vertex, weight="weight")
+            cost = nx.shortest_path_length(self.graph, source=start_vertex, target=target_vertex, weight="weight")
+            
+            # Exibe o custo e o caminho encontrado
+            messagebox.showinfo(
+                "Caminho Mais Curto",
+                f"Custo do menor caminho: {cost}\nSequência de vértices: {', '.join(map(str, path))}"
+            )
+        except nx.NetworkXNoPath:
+            messagebox.showerror("Erro", "Não há caminho entre os vértices fornecidos.")
+
     def check_eulerian(self):
         if self.graph.number_of_nodes() == 0:
             messagebox.showerror("Erro", "O grafo está vazio. Adicione vértices ou arestas antes de verificar se é Euleriano.")

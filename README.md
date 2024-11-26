@@ -38,18 +38,16 @@ pip install -r requirements.txt
 1. Para adicionar um vértice ou aresta, insira os dados no campo de entrada:
    - **Vértices**: Digite apenas o número do vértice e clique em **Adicionar**.
    - **Arestas**: Digite a conexão entre dois vértices no formato `v1-v2` (sem peso) ou `v1-(peso)-v2` (com peso) e clique em **Adicionar**.
+2. Após clicar em **Adicionar** o grafo já vai estar disponível para visualização.
 
 ### Upload em Lote
 1. Clique em **Inserir em Lote**.
-2. Selecione um arquivo `.txt` com os dados dos vértices e arestas separados por vírgulas.
+2. Selecione um arquivo `.txt` com os dados dos vértices e arestas separados por vírgulas ou um arquivo `.csv`, onde deve conter as colunas: v1, v2, peso.
 3. O sistema processará o arquivo e construirá o grafo automaticamente.
 
 ### Alterar Tipo de Grafo
 1. Use o botão **Tornar Grafo Direcionado/Não Direcionado** para alternar o tipo do grafo.
 2. Observação: Essa ação só pode ser feita antes de adicionar vértices ou arestas.
-
-### Visualizar Grafo
-1. Clique em **Visualizar Grafo** para exibir o grafo no painel principal.
 
 ### Verificar Eulerianidade
 1. Clique em **Verificar Euleriano** para checar se o grafo atende às condições de um grafo Euleriano.
@@ -57,6 +55,19 @@ pip install -r requirements.txt
 ### Vizinhança de um Vértice
 1. Insira o número do vértice no campo apropriado.
 2. Clique em **Ver Adjacentes** para visualizar os vértices conectados ao vértice selecionado.
+
+### Verificar Adjacência
+1. Insira dois vértices separados por vírgula.
+2. Clique em **Verificar Adjacência** para visualizar se os dois vértices são adjacentes.
+
+### Menor Caminho
+1. Insira o vértice de origem no campo apropriado.
+2. Insira o vértice de destino no campo apropriado.
+3. Clique em **Caminho Mais Curto** para visualizar o valor do custo do menor caminho entre os dois vértices como a sequência de vértices deste menor caminho.
+
+### Grau de um Vértice
+1. Insira o vértice no campo apropriado.
+2. Clique em **Ver Grau** para visualizar o grau do vértice digitado.
 
 ---
 
@@ -70,4 +81,5 @@ pip install -r requirements.txt
   - Com peso: `1-(10)-2`
 
 ### Arquivo para Inserção em Lote
-- O arquivo deve ser `.txt`, com vértices e arestas separados por vírgulas.
+- O arquivo pode ser `.txt`, com vértices e arestas separados por vírgulas.
+- O arquivo pode ser `.csv`, onde deve conter as colunas: v1, v2, peso.

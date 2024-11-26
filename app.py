@@ -181,25 +181,29 @@ class GraphTheoryApp(ctk.CTk):
         if file_path:
             if self.graph.number_of_nodes() != 0:
                 self.clear_graph()
-            if file_path.endswith(".csv"):
-                with open(file_path, "r") as file:
-                    reader = csv.reader(file)
-                    next(reader)  # Ignora a primeira linha (título)
-                    for row in reader:
-                        if len(row) >= 3:  # Verifica se a linha tem pelo menos 3 colunas
-                            # Formato: [coluna 1]-([coluna 3])-[coluna 2]
-                            processed_item = f"{row[0].strip()}-({row[2].strip()})-{row[1].strip()}"
-                            self.process_vertex_or_edge(processed_item)  # Chama a função de processamento existente
-            else:  # Caso seja um arquivo .txt
-                with open(file_path, "r") as file:
-                    for line in file:
-                        line = line.strip()
-                        items = line.split(",")  
-                        for item in items:
-                            self.process_vertex_or_edge(item.strip())  # Chama a função de processamento existente
-            self.display_graph()
-            self.update_graph_info()
-            messagebox.showinfo("Sucesso", "Dados carregados com sucesso do arquivo.")
+            try:
+                if file_path.endswith(".csv"):
+                    with open(file_path, "r", encoding="utf-8") as file:
+                        reader = csv.reader(file)
+                        next(reader)  # Ignora a primeira linha (título)
+                        for row in reader:
+                            if len(row) >= 3:  
+                                # Formato: [coluna 1]-([coluna 3])-[coluna 2]
+                                processed_item = f"{row[0].strip()}-({row[2].strip()})-{row[1].strip()}"
+                                self.process_vertex_or_edge(processed_item)  # Chama a função de processamento existente
+                else:  # Caso seja um arquivo .txt
+                    with open(file_path, "r", encoding="utf-8") as file:
+                        for line in file:
+                            line = line.strip()
+                            items = line.split(",")  
+                            for item in items:
+                                self.process_vertex_or_edge(item.strip())  # Chama a função de processamento existente
+                self.display_graph()
+                self.update_graph_info()
+                messagebox.showinfo("Sucesso", "Dados carregados com sucesso do arquivo.")
+            except UnicodeDecodeError:
+                messagebox.showerror("Erro", "Não foi possível ler o arquivo. Certifique-se de que ele está codificado em UTF-8.")
+
 
     def display_graph(self):
         if self.graph.number_of_nodes() == 0:

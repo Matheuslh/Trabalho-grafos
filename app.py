@@ -7,18 +7,17 @@ from matplotlib.figure import Figure
 from tkinter import filedialog, messagebox
 import csv
 
-ctk.set_appearance_mode("dark")  # Outros modos: "light", "system"
-ctk.set_default_color_theme("dark-blue")  # Outros temas: "green", "dark-blue"
+ctk.set_appearance_mode("dark")  
+ctk.set_default_color_theme("dark-blue") 
 
 class GraphTheoryApp(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("Teoria dos Grafos")
         self.geometry("1200x800")
-        self.graph = nx.Graph()  # Inicializa o grafo vazio
+        self.graph = nx.Graph()  
 
-        # Configurações básicas
-        self.weighted = True  # Sempre considerado como grafo valorizado (não há mais a opção não valorizado)
+        self.weighted = True  
         self.directed = False  # Grafo direcionado inicialmente desativado
 
         # Criando os frames principais
@@ -98,7 +97,21 @@ class GraphTheoryApp(ctk.CTk):
         # Botão para encontrar o caminho mais curto
         ctk.CTkButton(self.right_frame, text="Caminho Mais Curto", command=self.find_shortest_path, width=300).pack(pady=20)
 
+        ctk.CTkLabel(self.right_frame, text="Checar Grau de Vértice", font=("Arial", 16)).pack(pady=2)
 
+        # Entrada para o checar grau de vertice
+        self.check_degree = ctk.CTkEntry(self.right_frame, placeholder_text="Insira um vértice", width=300, height=30)
+        self.check_degree.pack(pady=5, padx=20)
+
+        ctk.CTkButton(self.right_frame, text="Ver grau", command=self.check_vertex_degree, width=300).pack(pady=20)
+
+        ctk.CTkLabel(self.right_frame, text="Checar Adjacência", font=("Arial", 16)).pack(pady=2)
+
+        # Entrada para o checar se dois vértices são adjacentes
+        self.check_adjacency = ctk.CTkEntry(self.right_frame, placeholder_text="Insira um par de vértices ex.: 1, 2", width=300, height=30)
+        self.check_adjacency.pack(pady=5, padx=20)
+
+        ctk.CTkButton(self.right_frame, text="Checar adjacência", command=self.check_adjacency, width=300).pack(pady=20)
         
     def log_message(self, message):
         print(message)  # Por enquanto, apenas imprime no console
@@ -185,8 +198,6 @@ class GraphTheoryApp(ctk.CTk):
                             self.process_vertex_or_edge(item.strip())  # Chama a função de processamento existente
             self.update_graph_info()
             messagebox.showinfo("Sucesso", "Dados carregados com sucesso do arquivo.")
-
-
 
     def display_graph(self):
         if self.graph.number_of_nodes() == 0:
@@ -282,6 +293,30 @@ class GraphTheoryApp(ctk.CTk):
             )
         except nx.NetworkXNoPath:
             messagebox.showerror("Erro", "Não há caminho entre os vértices fornecidos.")
+
+    def check_vertex_degree(self):
+        vertex = self.check_degree.get().strip()
+
+        if not vertex.isdigit():
+            messagebox.showerror("Erro", "Por favor, insira um vértice válido (número inteiro).")
+            return
+
+        vertex = int(vertex)
+
+        if vertex not in self.graph.nodes:
+            messagebox.showerror("Erro", "O vértice fornecido não existe no grafo.")
+            return
+
+        if self.directed:
+            in_degree = self.graph.in_degree(vertex)
+            out_degree = self.graph.out_degree(vertex)
+            messagebox.showinfo(
+                "Grau do Vértice",
+                f"Grau de Entrada: {in_degree}\nGrau de Saída: {out_degree}"
+            )
+        else:
+            degree = self.graph.degree(vertex)
+            messagebox.showinfo("Grau do Vértice", f"Grau: {degree}")
 
     def check_eulerian(self):
         if self.graph.number_of_nodes() == 0:
